@@ -1,0 +1,83 @@
+{
+  "rules": {
+    ".read": "auth != null",
+    "lab_data": {
+      ".read": true,
+      ".write": "auth != null && (auth.token.role === 'esp32_node' || auth.token.admin === true)",
+      "temperature": { ".validate": "newData.isNumber() && newData.val() >= -40 && newData.val() <= 125" },
+      "humidity": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100" },
+      "gas_level": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 4095" },
+      "distance_cm": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 500" },
+      "motion_detected": { ".validate": "newData.isBoolean()" },
+      "sensor_fault": { ".validate": "newData.isBoolean()" },
+      "last_updated": { ".validate": "newData.isNumber()" }
+    },
+    "settings": {
+      ".read": true,
+      ".write": "auth != null",
+      "max_temp": { ".validate": "newData.isNumber() && newData.val() >= 15.0 && newData.val() <= 85.0" },
+      "max_gas": { ".validate": "newData.isNumber() && newData.val() >= 200 && newData.val() <= 4095" },
+      "max_distance": { ".validate": "newData.isNumber() && newData.val() >= 5.0 && newData.val() <= 300.0" },
+      "auto_led": { ".validate": "newData.isBoolean()" },
+      "auto_buzzer": { ".validate": "newData.isBoolean()" }
+    },
+    "actuators": {
+      ".read": true,
+      ".write": "auth != null",
+      "warning_light": { ".validate": "newData.isBoolean()" },
+      "warning_alarm": { ".validate": "newData.isBoolean()" }
+    },
+    "device": {
+      ".read": true,
+      "online": {
+        ".write": "auth != null && (auth.token.role === 'esp32_node' || auth.token.admin === true)",
+        ".validate": "newData.isBoolean()"
+      },
+      "mode": {
+        ".write": "auth != null",
+        ".validate": "newData.isString() && (newData.val() === 'automatic' || newData.val() === 'manual')"
+      },
+      "last_seen": {
+        ".write": "auth != null",
+        ".validate": "newData.isNumber()"
+      },
+      "firmware_version": {
+        ".write": "auth != null",
+        ".validate": "newData.isString()"
+      },
+      "relay_light_actual": {
+        ".write": "auth != null && (auth.token.role === 'esp32_node' || auth.token.admin === true)",
+        ".validate": "newData.isBoolean()"
+      },
+      "relay_buzzer_actual": {
+        ".write": "auth != null && (auth.token.role === 'esp32_node' || auth.token.admin === true)",
+        ".validate": "newData.isBoolean()"
+      }
+    },
+    "alerts": {
+      ".read": true,
+      ".indexOn": ["timestamp", "severity"],
+      "$alert_id": {
+        ".write": "auth != null",
+        "type": { ".validate": "newData.isString()" },
+        "timestamp": { ".validate": "newData.isNumber()" },
+        "severity": { ".validate": "newData.isString() && (newData.val() === 'info' || newData.val() === 'warning' || newData.val() === 'critical')" },
+        "description": { ".validate": "newData.isString()" },
+        "read": { ".validate": "newData.isBoolean()" }
+      }
+    },
+    "sensor_history": {
+      ".read": true,
+      ".indexOn": ["timestamp"],
+      "$entry_id": {
+        ".write": "auth != null && (auth.token.role === 'esp32_node' || auth.token.admin === true)"
+      }
+    },
+    "commands": {
+      ".read": "auth != null",
+      "$cmd_id": {
+        ".write": "auth != null"
+      }
+    }
+  }
+}
